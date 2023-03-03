@@ -21,7 +21,7 @@ with header:
 with dataset:
     st.subheader('Table of dataset') 
     st.table(df)
-    st.write('Hi')
+    
 
 
 
