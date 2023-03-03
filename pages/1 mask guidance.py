@@ -2,13 +2,12 @@ import streamlit as st
 import pandas as pd 
 import requests
 import json
-import altair as alt
 
 st.sidebar.markdown('# Mask Guidance')
 
 header = st.container()
-dataset = st.container()
 advisory = st.container()
+dataset = st.container()
 
 # URL1 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
 # r = requests.request("GET", URL1)
@@ -62,25 +61,13 @@ with header:
     st.title('Mask Guidance Advisory')
     st.text('This page will give advisory on whether you should continue to engage in your \nphysical activities and whether you should mask up based on your health profile')
 
-with dataset: 
-    st.subheader('Table of dataset for PM2.5')
-    st.table(df1)
-    st.subheader('Table of dataset for PM10')
-    st.table(df2)
-
-with dataset:
-    st.subheader('Trendline for both PM2.5 and PM10 datas for the past 24 hours')
-    st.line_chart(df, x='created', y=['pm10', 'pm2d5'])
-
-with dataset: 
-    st.subheader('Trendline for both PM2.5 and PM10 datas for the past hour')
-    st.line_chart(df3, x='created', y=['pm2d5', 'pm10'])
-
 with advisory:
     st.header('Health Advisory')
-    st.text('Current AQI is:')
     AQI = pm25_aqi(avgaqi)
-    st.write(AQI)
+    lastvalue = int(df['pm2d5'].iloc[-1])
+    deviation = AQI - lastvalue 
+    st.metric("Air Quality Index", AQI, deviation)
+
     age = st.number_input('Enter your age', step = 1)
     healthcondition = st.selectbox('Enter your health profile', ['Healthy', 'Lung Conditions', 'Heart Conditions'])
     group = 0
@@ -128,6 +115,16 @@ with advisory:
             st.write('Remain indoors and keep activity levels low. Follow tips for keeping particle levels low indoors.')
         else:
             st.write('Avoid all physical activity outdoors.')
+
+with dataset:
+    st.subheader('Trendline for both PM2.5 and PM10 datas for the past 24 hours')
+    st.line_chart(df, x='created', y=['pm10', 'pm2d5'])
+
+with dataset: 
+    st.subheader('Trendline for both PM2.5 and PM10 datas for the past hour')
+    st.line_chart(df3, x='created', y=['pm2d5', 'pm10'])
+
+
     
 
 
