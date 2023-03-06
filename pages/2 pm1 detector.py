@@ -10,7 +10,7 @@ st.sidebar.markdown('# PM 1 Detector')
 header = st.container()
 advisory = st.container()
 
-URL = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records"
+URL = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=100&hours=1"
 r = requests.request("GET", URL)
 data=r.json()
 df = pd.read_json(URL)
@@ -26,6 +26,7 @@ with advisory:
     columns1 = ['created', 'pm1']
     df1 = df[columns1]
     df1['pm1'] = df1['pm1'].astype(float)
+    df1['created'] = pd.to_datetime(df1['created'])
     st.table(df1)
     global avgpm1
     avgpm1 = df1['pm1'].mean()
