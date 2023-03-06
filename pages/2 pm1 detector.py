@@ -1,7 +1,7 @@
 import streamlit as st 
+import asyncio
 import pandas as pd 
 import requests
-from bs4 import BeautifulSoup
 import telegram
 import time 
 
@@ -27,42 +27,35 @@ with advisory:
     df1 = df[columns1]
     df1['pm1'] = df1['pm1'].astype(float)
     st.table(df1)
+    global avgpm1
     avgpm1 = df1['pm1'].mean()
     lastvalue = float(df1['pm1'].iloc[-1])
     deviation = avgpm1 - lastvalue 
     st.title('PM1 Value & Deviation')
     st.metric('PM1', avgpm1, deviation)
 
-# Set up the Telegram bot
-bot = telegram.Bot(token='6263023646:AAGazIM4dn0eRPh1TEUcOzXhrMmb6Atv8rw')
-
-# Define the Streamlit app URL
-url = 'https://zhen-an-frontend--home-mqw6sn.streamlit.app/pm1_detector'
-
-# Define the initial value
 initial_value = 0
 
-while True:
-    # Fetch the Streamlit app HTML
-    response = requests.get(url)
-    html = response.content
+async def bot_updater():
+    # Set up the Telegram bot
+    bot = telegram.Bot(token='6263023646:AAGazIM4dn0eRPh1TEUcOzXhrMmb6Atv8rw')
 
-    # Parse the HTML using BeautifulSoup
-    soup = BeautifulSoup(html, 'html.parser')
-
-    # Extract the value of interest
-    value = soup.find('div', {'class': 'streamlit-metric'}).get('aria-valuenow')
-
-    # Convert the value to a number
-    value = float(value)
+    # Define the initial value
+    global initial_value 
+    global avgpm1
 
     # Check for changes
-    if value != initial_value:
-        # Send a message to the Telegram bot
-        bot.send_message(chat_id='-1001872135066', text=f'The PM1 value has changed to {value}!')
+    
+    if avgpm1 != initial_value:
+        async with bot:
+            # Send a message to the Telegram bot
+            await bot.send_message(chat_id='-1001872135066', text=f'The PM1 value has changed to {avgpm1}!')
 
         # Update the initial value
-        initial_value = value
+        initial_value = avgpm1
+
+while True:
+    asyncio.run(bot_updater())
 
     # Wait for some time before checking again
-    time.sleep(60)
+    time.sleep(5)

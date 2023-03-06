@@ -8,17 +8,17 @@ header = st.container()
 advisory = st.container()
 dataset = st.container()
 
-# URL1 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
-# r = requests.request("GET", URL1)
-# data=r.json()
-# df = pd.read_json(URL1)
-# df = pd.json_normalize(data, record_path = ['records'])
+URL1 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
+r = requests.request("GET", URL1)
+data=r.json()
+df1 = pd.read_json(URL1)
+df1 = pd.json_normalize(data, record_path = ['records'])
 
 URL24 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
 r = requests.request("GET", URL24)
 data=r.json()
-df = pd.read_json(URL24)
-df = pd.json_normalize(data, record_path = ['records'])
+df24 = pd.read_json(URL24)
+df24 = pd.json_normalize(data, record_path = ['records'])
 
 # This method takes PM2.5 concentration value as input and returns AQI value as output
 def pm25_aqi(pm25):
@@ -39,17 +39,11 @@ def pm25_aqi(pm25):
    # Return AQI value rounded to integer
     return round(aqi)
 
-columns1 = ['created', 'pm2d5']
-df1 = df[columns1] 
+columns2 = ['created', 'pm2d5', 'pm10']
+df2 = df1[columns2]
 
-columns2 = ['created', 'pm10']
-df2 = df[columns2]
-
-columns3 = ['created', 'pm2d5', 'pm10']
-df3 = df[columns3]
-
-df['pm10'] = df['pm10'].astype(float)
-df['pm2d5'] = df['pm2d5'].astype(float)
+df2['pm10'] = df2['pm10'].astype(float)
+df2['pm2d5'] = df2['pm2d5'].astype(float)
 
 df3['pm10'] = df3['pm10'].astype(float)
 df3['pm2d5'] = df3['pm2d5'].astype(float)
