@@ -41,6 +41,7 @@ def pm25_aqi(pm25):
 
 columns2 = ['created', 'pm2d5', 'pm10']
 df2 = df1[columns2]
+df3 = df1[columns2]
 
 df2['pm10'] = df2['pm10'].astype(float)
 df2['pm2d5'] = df2['pm2d5'].astype(float)

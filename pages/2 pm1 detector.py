@@ -58,4 +58,4 @@ while True:
     asyncio.run(bot_updater())
 
     # Wait for some time before checking again
-    time.sleep(5)
+    time.sleep(3600)
