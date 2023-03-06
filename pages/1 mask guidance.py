@@ -8,13 +8,13 @@ header = st.container()
 advisory = st.container()
 dataset = st.container()
 
-URL1 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
+URL1 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=100&hours=1"
 r = requests.request("GET", URL1)
 data=r.json()
 df1 = pd.read_json(URL1)
 df1 = pd.json_normalize(data, record_path = ['records'])
 
-URL24 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=25"
+URL24 = "https://shielded-meadow-27035.herokuapp.com/air_sensor_records?per_page=1500&hours=24"
 r = requests.request("GET", URL24)
 data=r.json()
 df24 = pd.read_json(URL24)
@@ -41,15 +41,17 @@ def pm25_aqi(pm25):
 
 columns2 = ['created', 'pm2d5', 'pm10']
 df2 = df1[columns2]
-df3 = df1[columns2]
+df3 = df24[columns2]
 
 df2['pm10'] = df2['pm10'].astype(float)
 df2['pm2d5'] = df2['pm2d5'].astype(float)
+df2['created'] = pd.to_datetime(df2['created'])
 
 df3['pm10'] = df3['pm10'].astype(float)
 df3['pm2d5'] = df3['pm2d5'].astype(float)
+df3['created'] = pd.to_datetime(df3['created'])
 
-avgaqi = df3['pm2d5'].mean()
+avgaqi = df2['pm2d5'].mean()
 
 with header: 
     st.title('Mask Guidance Advisory')
@@ -58,7 +60,7 @@ with header:
 with advisory:
     st.header('Health Advisory')
     AQI = pm25_aqi(avgaqi)
-    lastvalue = int(df['pm2d5'].iloc[-1])
+    lastvalue = int(df2['pm2d5'].iloc[-1])
     deviation = AQI - lastvalue 
     st.metric("Air Quality Index", AQI, deviation)
 
@@ -111,12 +113,13 @@ with advisory:
             st.write('Avoid all physical activity outdoors.')
 
 with dataset:
-    st.subheader('Trendline for both PM2.5 and PM10 datas for the past 24 hours')
-    st.line_chart(df, x='created', y=['pm10', 'pm2d5'])
+     st.subheader('Trendline for both PM2.5 and PM10 datas for the past 24 hours')
+     st.line_chart(df3, x='created', y=['pm10', 'pm2d5'])
 
 with dataset: 
     st.subheader('Trendline for both PM2.5 and PM10 datas for the past hour')
-    st.line_chart(df3, x='created', y=['pm2d5', 'pm10'])
+    st.table(df2)
+    st.line_chart(df2, x='created', y=['pm2d5', 'pm10'])
 
 
     
